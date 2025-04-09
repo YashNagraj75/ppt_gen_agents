@@ -4,9 +4,11 @@ import os
 from openai import AsyncOpenAI
 
 from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner,
-                    set_default_openai_api, set_default_openai_client)
+                    handoff, set_default_openai_api, set_default_openai_client)
 
 set_default_openai_api("chat_completions")
+ModelSettings.tool_choice = "auto"
+
 
 client = AsyncOpenAI(
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
@@ -14,23 +16,34 @@ client = AsyncOpenAI(
 )
 
 
-ModelSettings.tool_choice = "auto"
+create_slide = Agent(
+    name="Create Slide",
+    instructions="You are an expert slide designer. Create a slide based on the layout provided.",
+    model=OpenAIChatCompletionsModel("gemini-2.0-flash", openai_client=client),
+)
 
 planner = Agent(
     name="Slide Layout Planner",
-    instructions="You are an expert slide layout designer give slide layouts given the content for the presentation",
-    model=OpenAIChatCompletionsModel(
-        "gemini-2.0-flash-thinking-exp-01-21", openai_client=client
-    ),
+    instructions="""You are an expert slide layout designer give slide layouts given the content for the presentation, 
+    first generate the slide layout yourself, hand off to the Create Slide agent to generate the slide layout.""",
+    model=OpenAIChatCompletionsModel("gemini-2.0-flash", openai_client=client),
+    handoffs=[handoff(create_slide)],
 )
 
 
 async def main():
-    result = await Runner.run(
+    layout_result = await Runner.run(
         planner,
         "Create a slide layout for a presentation on the impact of climate change on biodiversity.",
     )
-    print(result.final_output)
+    layout = layout_result.final_output
+    print("Planner's Slide Layout:\n", layout)
+
+    # Step 2: Handoff to Create Slide agent
+    slide_result = await Runner.run(
+        create_slide, f"Design a slide using the following layout:\n{layout}"
+    )
+    print("Create Slide Agent's Output:\n", slide_result.final_output)
 
 
 if __name__ == "__main__":
