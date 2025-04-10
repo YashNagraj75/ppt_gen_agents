@@ -7,7 +7,6 @@ from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner,
                     handoff, set_default_openai_api, set_default_openai_client)
 
 set_default_openai_api("chat_completions")
-ModelSettings.tool_choice = "auto"
 
 
 client = AsyncOpenAI(
@@ -20,14 +19,15 @@ create_slide = Agent(
     name="Create Slide",
     instructions="You are an expert slide designer. Create a slide based on the layout provided.",
     model=OpenAIChatCompletionsModel("gemini-2.0-flash", openai_client=client),
+    model_settings=ModelSettings(temperature=0.8),
 )
 
 planner = Agent(
     name="Slide Layout Planner",
     instructions="""You are an expert slide layout designer give slide layouts given the content for the presentation, 
-    first generate the slide layout yourself, hand off to the Create Slide agent to generate the slide layout.""",
+    first generate the slide layout""",
     model=OpenAIChatCompletionsModel("gemini-2.0-flash", openai_client=client),
-    handoffs=[handoff(create_slide)],
+    model_settings=ModelSettings(temperature=0.8),
 )
 
 
@@ -41,9 +41,10 @@ async def main():
 
     # Step 2: Handoff to Create Slide agent
     slide_result = await Runner.run(
-        create_slide, f"Design a slide using the following layout:\n{layout}"
+        create_slide,
+        f"Design a slide using the following layout:\n{layout}\n\n",
     )
-    print("Create Slide Agent's Output:\n", slide_result.final_output)
+    print("\n\nCreate Slide Agent's Output:\n", slide_result.final_output)
 
 
 if __name__ == "__main__":
