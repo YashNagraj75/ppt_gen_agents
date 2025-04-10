@@ -29,7 +29,6 @@ planner = Agent(
     name="Slide Layout Planner",
     instructions=Planner_Prompt.format(
         templates=Layouts,
-        content=Content,
     ),
     model=OpenAIChatCompletionsModel("gemini-2.0-flash-001", openai_client=client),
     model_settings=ModelSettings(temperature=0.6),
@@ -40,7 +39,7 @@ planner = Agent(
 async def main():
     layout_result = await Runner.run(
         planner,
-        "Create a slide layout for a presentation on the impact of climate change on biodiversity.",
+        f"Create a slide layout for a presentation on the impact of climate change on biodiversity, on the content {Content}",
     )
     layout = layout_result.final_output
     print("Planner's Slide Layout:\n", layout)
