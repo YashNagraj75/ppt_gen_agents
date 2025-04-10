@@ -2,6 +2,9 @@ import asyncio
 import os
 
 from openai import AsyncOpenAI
+from prompts import Content, Layouts, Planner_Prompt
+from pydantic.type_adapter import P
+from schema import PlannerOutput
 
 from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner,
                     handoff, set_default_openai_api, set_default_openai_client)
@@ -24,10 +27,13 @@ create_slide = Agent(
 
 planner = Agent(
     name="Slide Layout Planner",
-    instructions="""You are an expert slide layout designer give slide layouts given the content for the presentation, 
-    first generate the slide layout""",
-    model=OpenAIChatCompletionsModel("gemini-2.0-flash", openai_client=client),
-    model_settings=ModelSettings(temperature=0.8),
+    instructions=Planner_Prompt.format(
+        templates=Layouts,
+        content=Content,
+    ),
+    model=OpenAIChatCompletionsModel("gemini-2.0-flash-001", openai_client=client),
+    model_settings=ModelSettings(temperature=0.6),
+    output_type=list[PlannerOutput],
 )
 
 
@@ -38,13 +44,6 @@ async def main():
     )
     layout = layout_result.final_output
     print("Planner's Slide Layout:\n", layout)
-
-    # Step 2: Handoff to Create Slide agent
-    slide_result = await Runner.run(
-        create_slide,
-        f"Design a slide using the following layout:\n{layout}\n\n",
-    )
-    print("\n\nCreate Slide Agent's Output:\n", slide_result.final_output)
 
 
 if __name__ == "__main__":
