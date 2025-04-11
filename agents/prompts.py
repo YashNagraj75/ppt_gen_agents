@@ -19,7 +19,14 @@ Therefore the output format is as follows:
 
 """
 
+Text_Prompt = """
+You are a slide content generator who has been given the task to generate content for a slide.
+You are going to generate content for a given slide 
 
+
+
+
+"""
 Layouts = """
 layouts = {
   theme: "corporate", 
