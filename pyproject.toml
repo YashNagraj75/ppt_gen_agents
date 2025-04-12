@@ -8,5 +8,6 @@ dependencies = [
     "fastapi>=0.115.12",
     "openai>=1.71.0",
     "openai-agents>=0.0.9",
+    "pillow>=11.1.0",
     "uvicorn>=0.34.0",
 ]
