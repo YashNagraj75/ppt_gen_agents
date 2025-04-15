@@ -2,12 +2,19 @@ import asyncio
 import os
 
 from openai import AsyncOpenAI
-from prompts import Content, Layout_Desc, Planner_Prompt
+from prompts import Content, Layout_Desc, Output_Format, Planner_Prompt
 from schema import PlannerOutput
 from utils import encode_images
 
-from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner,
-                    handoff, set_default_openai_api, set_default_openai_client)
+from agents import (
+    Agent,
+    ModelSettings,
+    OpenAIChatCompletionsModel,
+    Runner,
+    handoff,
+    set_default_openai_api,
+    set_default_openai_client,
+)
 
 set_default_openai_api("chat_completions")
 
@@ -30,8 +37,10 @@ planner = Agent(
     instructions=Planner_Prompt.format(
         templates=Layout_Desc,
         content=Content,
+        format=Output_Format,
     ),
-    model=OpenAIChatCompletionsModel("gemini-2.0-flash-001", openai_client=client),
+    # model=OpenAIChatCompletionsModel("gemini-2.0-flash-001", openai_client=client),
+    model=OpenAIChatCompletionsModel("gemini-2.5-pro-exp-03-25", openai_client=client),
     model_settings=ModelSettings(temperature=0.9),
     output_type=list[PlannerOutput],
 )
@@ -63,8 +72,8 @@ async def main():
         ],
     )
     layouts = layout_result.final_output
+    print(layouts)
 
-    # Print just the layout information without the base64 encoded images
     for layout in layouts:
         print(f"Layout: {layout.layout}, Title: {layout.title}")
 

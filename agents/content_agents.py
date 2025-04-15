@@ -34,11 +34,10 @@ content_generator = Agent(
     instructions="",
     model=OpenAIChatCompletionsModel("gemini-2.0-flash-001", openai_client=client),
     model_settings=ModelSettings(temperature=0.6),
-    handoffs=[
-        handoff(chart_agent),
-        handoff(text_agent),
-        handoff(table_agent),
-        handoff(image_agent),
-        handoff(media_agent),
+    tools=[
+        text_agent.as_tool(
+            tool_name="text_placeholder_content_generation",
+            tool_description="Use this tool for getting text for the content in the slide layout",
+        )
     ],
 )
