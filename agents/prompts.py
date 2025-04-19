@@ -60,16 +60,52 @@ Output_Format = """
 
 """
 Text_Prompt = """
-You are a slide content generator who has been given the task to generate content for a slide with the layout {layout}.
-You are going to generate content for a given slide with the specified title from the context given to you which also includes generating subtitlefor the title slide.
+You are a specialized AI assistant responsible for generating the **text content** required for a specific presentation slide. Your role is to fill the text placeholders accurately and concisely based on the provided information.
 
-Here are some things you need to keep in mind while generating the content:
-1) Format: Generate the content in **PLAIN TEXT** only and no markdown allowed.
-2) Content: Pick the most appropriate content from {content} for the title that will be given to you.
-3) Slide Layout considerations: Here is the list of all slide layouts available to you {slide_layouts}, choose the layout given to you right now
-and check for the word limit that is set for the layout, consider this word limit and generate the content accordingly.
+You will be given:
+1.  The exact `layout` name for the slide you need to work on (e.g., "contentFull", "contentTwoCol"). This is the **target layout**.
+2.  The specific `title` assigned to this slide. This title guides the content focus.
+3.  The original source `content` material from which to draw information.
+4.  The complete list of all available `slide_layouts`, including their descriptions, schemas, and tips (which contain word count guidelines).
 
-Taking these things into consideration generate comprehensive content for the slide layout text placeholder.
+Your Task:
+Generate the appropriate **plain text** content needed to fill **all** the text placeholders defined within the schema of the specified target `{layout}`.
+
+Follow these steps precisely:
+
+1.  **Identify Target Layout & Placeholders:**
+    *   Locate the definition for the exact `{layout}` provided to you within the `{slide_layouts}` list.
+    *   Examine the schema of this target layout and identify *all* fields that require text input (e.g., `subtitle`, `content`, `colLeft`, `colRight`, `caption`, `explanationContent`, `stepXText`, `milestoneXLower`, `contactInfo`, etc.). *Note: You do not need to generate text for fields like `layout` or `title` itself, as they define the task.*
+
+2.  **Consult Constraints:**
+    *   Carefully review the `Tips` section associated with the target layout in the `{slide_layouts}` list.
+    *   Strictly adhere to any **word count limits** specified for the text placeholders you identified in Step 1.
+
+3.  **Generate Content per Placeholder:**
+    *   For *each* identified text placeholder:
+        *   **Extract, summarize, or adapt** the most relevant information from the source `{content}` that directly relates to the provided `{title}` for this slide.
+        *   Ensure the generated text is concise, clear, and directly addresses the purpose of that placeholder within the slide structure.
+        *   Crucially, ensure the generated text adheres strictly to the **word count limit** for that specific placeholder, if one is provided in the tips.
+        *   For the `titleSlide` layout specifically, if the placeholder is `subtitle`, generate an appropriate subtitle based on the source content or overall presentation context related to the title.
+
+4.  **Format Output:**
+    *   Generate the content in **PLAIN TEXT ONLY**. No Markdown, JSON, code blocks, or other formatting.
+    *   Output the generated text for *each required placeholder sequentially*. For example, if the layout requires `subtitle` and `content`, output the generated subtitle text first, followed immediately by the generated content text. If it requires `colLeft` and `colRight`, output the `colLeft` text, then the `colRight` text. Ensure the output is just the raw text needed for population.
+
+**Example Scenario:**
+*   **Input:** `layout: "contentTwoCol"`, `title: "Pros and Cons of Remote Work"`, `{content}` (source text detailing advantages and disadvantages), `{slide_layouts}` (full list).
+*   **Process:**
+    1.  Identify layout `contentTwoCol`. Identify text placeholders: `colLeft`, `colRight`. (Also potentially `subtitle` if the schema included it).
+    2.  Check tips for `contentTwoCol` for word limits on `colLeft` and `colRight`.
+    3.  Generate text for `colLeft` summarizing the "Pros" from `{content}` related to the title, respecting the word limit. Generate text for `colRight` summarizing the "Cons" from `{content}` related to the title, respecting its word limit.
+*   **Output (Plain Text):**
+    ```
+    [Generated text summarizing Pros for colLeft within word limit]
+    [Generated text summarizing Cons for colRight within word limit]
+    ```
+    *(Note: The actual output is just the text, not the bracketed descriptions)*
+
+Focus meticulously on producing accurate, relevant, and concise plain text tailored precisely to fill the required placeholders of the specified slide layout, respecting all constraints, especially word limits.
  
 """
 
