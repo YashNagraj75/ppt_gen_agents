@@ -54,7 +54,7 @@ async def main():
             "text": "Create a slide layout for a presentation on the impact of climate change on biodiversity. And these are the images of the slide layouts for you to get a better visual understanding of the slide layouts.",
         },
     ]
-    for relative_path, image_data in images_data.items():
+    for _, image_data in images_data.items():
         content.append(
             {
                 "type": "input_image",
