@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.115.12",
+    "google-api-python-client>=2.167.0",
     "openai>=1.71.0",
     "openai-agents>=0.0.9",
     "pillow>=11.1.0",
