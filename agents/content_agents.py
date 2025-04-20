@@ -1,7 +1,8 @@
 import os
 
 from openai import AsyncOpenAI
-from prompts import Text_Prompt
+from prompts import Image_Prompt, Text_Prompt
+from tools import get_image_description
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, handoff
 
@@ -29,9 +30,13 @@ table_agent = chart_agent.clone(
 )
 
 image_agent = chart_agent.clone(
-    name="Table Generator",
-    instructions="Generate tables",
+    name="Image Generator",
+    instructions=Image_Prompt,
+    tools=[
+        get_image_description,
+    ],
 )
+
 
 media_agent = chart_agent.clone(
     name="Table Generator",
@@ -46,6 +51,10 @@ content_generator = Agent(
         text_agent.as_tool(
             tool_name="text_placeholder_content_generation",
             tool_description="Use this tool for getting text for the content in the slide layout",
-        )
+        ),
+        image_agent.as_tool(
+            tool_name="image_placeholder_content_generation",
+            tool_description="Use this tool for getting image for the content in the slide layout",
+        ),
     ],
 )

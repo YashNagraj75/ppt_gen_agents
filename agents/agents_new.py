@@ -3,8 +3,7 @@ import os
 
 from content_agents import content_generator, text_agent
 from openai import AsyncOpenAI
-from prompts import (Content, Content_Generator, Layout_Desc, Output_Format,
-                     Planner_Prompt)
+from prompts import Content, Content_Generator, Layout_Desc, Planner_Prompt
 from schema import PlannerOutput
 from utils import encode_images
 
@@ -32,7 +31,6 @@ planner = Agent(
     instructions=Planner_Prompt.format(
         templates=Layout_Desc,
         content=Content,
-        format=Output_Format,
     ),
     model=OpenAIChatCompletionsModel(
         "gemini-2.5-flash-preview-04-17", openai_client=client

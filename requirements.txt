@@ -11,6 +11,7 @@ google-api-core==2.24.2
 google-api-python-client==2.167.0
 google-auth==2.39.0
 google-auth-httplib2==0.2.0
+google-genai==1.11.0
 googleapis-common-protos==1.70.0
 griffe==1.7.2
 h11==0.14.0
@@ -45,3 +46,4 @@ typing-inspection==0.4.0
 uritemplate==4.1.1
 urllib3==2.3.0
 uvicorn==0.34.0
+websockets==15.0.1
