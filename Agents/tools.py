@@ -11,7 +11,8 @@ from google.genai import types
 from googleapiclient.discovery import build
 from PIL import Image
 from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api._errors import NoTranscriptFound, TranscriptsDisabled
+from youtube_transcript_api._errors import (NoTranscriptFound,
+                                            TranscriptsDisabled)
 
 client = genai.Client(
     api_key=os.environ.get("GEMINI_API_KEY"),

@@ -101,10 +101,6 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
         )
         content = await Runner.run(content_generator, "Make the slide layout")
         print(content.final_output)
-        content = convert_to_content_output(content.final_output)
-        print(content)
-        exit(0)
-
         formatted_content = await Runner.run(
             content_formatter, f"Format this {content.final_output} to output schema"
         )

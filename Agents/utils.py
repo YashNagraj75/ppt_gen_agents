@@ -1,6 +1,6 @@
 import json
 
-from schema import ContentOutput
+from .schema import ContentOutput, SlideLayout
 
 
 def parse_output(generations):
@@ -26,7 +26,7 @@ def parse_content_output(generation):
     Convert nested lists of ContentOutput models into a list of serializable dicts.
     """
     data = {
-        "layout": generation.layout.name,
+        "layout": generation.layout.value,
         "title": generation.title,
         "data": generation.data,
     }
@@ -54,14 +54,3 @@ def convert_to_content_output(json_str: str):
     title = parsed.pop("title")
     data = parsed  # Remaining fields
     return ContentOutput(layout=layout, title=title, data=data)
-
-
-json_str = """
-{
-  "layout": "titleSlide",
-  "title": "Benefits of Strategic Management",
-  "subtitle": "A Presentation on the Advantages of Strategic Planning"
-}
-"""
-
-print(convert_to_content_output(json_str))
