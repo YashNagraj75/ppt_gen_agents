@@ -23,7 +23,6 @@ class SlideLayout(enum.Enum):
     PROCESS_VERTICAL = "processVertical"
     TIMELINE_HORIZONTAL = "timelineHorizontal"
     TIMELINE_VERTICAL = "timelineVertical"
-    CONTACT_INFO = "contactInfo"
 
 
 class PlannerOutput(BaseModel):
@@ -44,4 +43,4 @@ class UnitList(BaseModel):
 class ContentOutput(BaseModel):
     layout: SlideLayout
     title: str
-    data: dict
+    data: str
