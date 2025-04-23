@@ -28,7 +28,7 @@ def parse_content_output(generation):
     data = {
         "layout": generation.layout.value,
         "title": generation.title,
-        "data": generation.data,
+        "data": json.loads(generation.data),
     }
 
     return data

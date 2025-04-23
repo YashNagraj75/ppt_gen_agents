@@ -1,11 +1,23 @@
 import os
 
-from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, handoff,
-                    model_settings)
+from agents import (
+    Agent,
+    ModelSettings,
+    OpenAIChatCompletionsModel,
+    handoff,
+    model_settings,
+)
 from openai import AsyncOpenAI
 
-from .prompts import (Chart_Prompt, Content_Generator, Image_Prompt,
-                      Media_Prompt, Table_Prompt, Text_Prompt)
+from .prompts import (
+    Chart_Prompt,
+    Image_Prompt,
+    Media_Prompt,
+    Table_Prompt,
+    Text_Prompt,
+    Formatter_Prompt,
+    Layout_Desc,
+)
 from .schema import ContentOutput
 from .tools import get_image_description, get_video_and_transcript
 
@@ -79,15 +91,8 @@ content_generator = Agent(
 
 content_formatter = Agent(
     name="Content Formatter",  # Changed name from "Chart Generator" to more accurate "Content Formatter"
-    instructions="""
-    You will be given a json output format it according to the output format:
-    1) layout: The name of the layout.
-    2) title: The title of the slide.
-    3) data: A dictionary containing all other fields from the input JSON, excluding 'layout' and 'title'.
-    
-    The output should be a valid JSON object that follows the ContentOutput schema, with layout and title as required fields and any additional data provided in the data field.
-    """,
+    instructions=Formatter_Prompt.format(layouts=Layout_Desc),
     model=OpenAIChatCompletionsModel("gemini-2.0-flash-001", openai_client=client),
-    model_settings=ModelSettings(temperature=0.3),
+    model_settings=ModelSettings(temperature=0.6),
     output_type=ContentOutput,
 )

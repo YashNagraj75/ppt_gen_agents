@@ -1,8 +1,13 @@
 import sqlite3
 from datetime import datetime
 
+# import os
 import pytz
 from bson import ObjectId
+# from pymongo import MongoClient
+
+# MongoDB client
+# mongo_client = MongoClient(os.environ.get("MONGO_URI"))
 
 
 # SQLite functions
@@ -110,6 +115,7 @@ def insert_doc(client, userId, subject):
                 "error_msg": "None",
                 "placeholders": [],
                 "layouts": [],
+                "validated_layouts": [],
             }
         )
         return str(result.inserted_id)
@@ -125,17 +131,27 @@ def update_placeholders(client, doc_id, placeholders, status, error_msg="None"):
         db = client["main"]
         collection = db["PPT"]
         time = datetime.now(pytz.timezone("Asia/Kolkata"))
-        collection.update_one(
-            {"_id": ObjectId(f"{doc_id}")},
-            {
-                "$set": {
-                    "placeholders": placeholders,
-                    "status": status,
-                    "error_msg": error_msg,
-                    "last_update": time.strftime("%Y-%m-%d %H:%M:%S %Z%z"),
-                }
-            },
-        )
+
+        doc = collection.find_one({"_id": ObjectId(f"{doc_id}")})
+        current_placeholders = doc.get("placeholders", [])
+
+        if current_placeholders == []:
+            combined_placeholders = placeholders
+        else:
+            combined_placeholders = current_placeholders + [placeholders[-1]]
+
+        if combined_placeholders:
+            collection.update_one(
+                {"_id": ObjectId(f"{doc_id}")},
+                {
+                    "$set": {
+                        "placeholders": combined_placeholders,
+                        "status": status,
+                        "error_msg": error_msg,
+                        "last_update": time.strftime("%Y-%m-%d %H:%M:%S %Z%z"),
+                    },
+                },
+            )
     except Exception as e:
         print(f"MongoDB Update Error: {e}")
 
@@ -151,12 +167,35 @@ def update_layouts(client, doc_id, layouts, status, error_msg="None"):
         collection.update_one(
             {"_id": ObjectId(f"{doc_id}")},
             {
+                "$push": {"layouts": {"$each": layouts}},
                 "$set": {
-                    "layouts": layouts,
                     "status": status,
                     "error_msg": error_msg,
                     "last_update": time.strftime("%Y-%m-%d %H:%M:%S %Z%z"),
-                }
+                },
+            },
+        )
+    except Exception as e:
+        print(f"MongoDB Update Error: {e}")
+
+
+def update_validated_layouts(client, doc_id, valid_layouts, status, error_msg="None"):
+    """
+    Update the MongoDB collection with the provided data.
+    """
+    try:
+        db = client["main"]
+        collection = db["PPT"]
+        time = datetime.now(pytz.timezone("Asia/Kolkata"))
+        collection.update_one(
+            {"_id": ObjectId(f"{doc_id}")},
+            {
+                "$push": {"validated_layouts": {"$each": valid_layouts}},
+                "$set": {
+                    "status": status,
+                    "error_msg": error_msg,
+                    "last_update": time.strftime("%Y-%m-%d %H:%M:%S %Z%z"),
+                },
             },
         )
     except Exception as e:
@@ -183,3 +222,12 @@ def final_update(client, doc_id, placeholders, status):
         )
     except Exception as e:
         print(f"MongoDB Update Error: {e}")
+
+
+# update_placeholders(
+#    mongo_client,
+#    doc_id="6808938e5f2d83bc334af59c",
+#    placeholders=[{"layout": "New", "title": "New"}],
+#    status="completed",
+#    error_msg="None",
+# )

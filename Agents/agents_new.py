@@ -1,17 +1,16 @@
 import os
 
 from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner,
-                    handoff, set_default_openai_api, set_default_openai_client)
+                    set_default_openai_api)
 from openai import AsyncOpenAI
 from pymongo import MongoClient
 
 from .content_agents import content_formatter, content_generator
 from .data import update_layouts, update_placeholders
-from .prompts import Content, Content_Generator, Layout_Desc, Planner_Prompt
+from .prompts import Content_Generator, Layout_Desc, Planner_Prompt
 from .schema import PlannerOutput
 from .tools import encode_images
-from .utils import (convert_to_content_output, parse_content_output,
-                    parse_planner_output)
+from .utils import parse_content_output, parse_planner_output
 
 set_default_openai_api("chat_completions")
 
@@ -45,6 +44,8 @@ planner = Agent(
 
 
 async def generate(syllabus_content: str = None, doc_id: str = None):
+    layouts_planned = []
+    layouts_processed = []
     try:
         images_data = encode_images()
         content = [
@@ -73,11 +74,11 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
         )
         layouts = layout_result.final_output
         parsed_layouts = parse_planner_output(layouts)
-        print(parsed_layouts)
+        layouts_planned.append(parsed_layouts)
         update_layouts(
             mongo_client,
             doc_id,
-            parsed_layouts,
+            layouts_planned,
             "layouts planned",
         )
     except Exception as e:
@@ -91,26 +92,39 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
         )
         return
 
-    layouts_processed = []
-    for layout in layouts:
-        content_generator.instructions = Content_Generator.format(
-            layout_name=layout.layout,
-            title=layout.title,
-            content=syllabus_content,
-            layouts=Layout_Desc,
-        )
-        content = await Runner.run(content_generator, "Make the slide layout")
-        print(content.final_output)
-        formatted_content = await Runner.run(
-            content_formatter, f"Format this {content.final_output} to output schema"
-        )
-        parsed_content = parse_content_output(formatted_content.final_output)
-        print(parsed_content)
-        print("\n\n")
-        layouts_processed.append(parsed_content)
+    print(f"Layouts planned: {layouts}")
+    try:
+        for layout in layouts:
+            print(layout)
+            content_generator.instructions = Content_Generator.format(
+                layout_name=layout.layout,
+                title=layout.title,
+                content=syllabus_content,
+                layouts=Layout_Desc,
+            )
+            content = await Runner.run(content_generator, "Make the slide layout")
+            print(content.final_output)
+            formatted_content = await Runner.run(
+                content_formatter,
+                f"Format this {content.final_output} to output schema",
+            )
+            parsed_content = parse_content_output(formatted_content.final_output)
+            layouts_processed.append(parsed_content)
+            # Remove this call from the loop
+            update_placeholders(
+                mongo_client,
+                doc_id,
+                layouts_processed,
+                "processing layouts",
+            )
+    except Exception as e:
+        print(f"Error in generating content: {e}")
         update_placeholders(
             mongo_client,
             doc_id,
-            layouts_processed,
-            "processing layouts",
+            [],
+            "failed during content generation",
+            str(e),
         )
+
+    return layouts_processed
