@@ -41,6 +41,4 @@ class UnitList(BaseModel):
 
 
 class ContentOutput(BaseModel):
-    layout: SlideLayout
-    title: str
     data: str

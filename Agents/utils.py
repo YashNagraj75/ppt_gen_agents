@@ -28,6 +28,17 @@ def parse_content_output(generation):
     data = {
         "layout": generation.layout.value,
         "title": generation.title,
+        "data": generation.data,
+    }
+
+    return data
+
+
+def parse_data(generation):
+    """
+    Convert nested lists of ContentOutput models into a list of serializable dicts.
+    """
+    data = {
         "data": json.loads(generation.data),
     }
 

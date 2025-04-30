@@ -1,7 +1,12 @@
 import os
 
-from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner,
-                    set_default_openai_api)
+from agents import (
+    Agent,
+    ModelSettings,
+    OpenAIChatCompletionsModel,
+    Runner,
+    set_default_openai_api,
+)
 from openai import AsyncOpenAI
 from pymongo import MongoClient
 
@@ -10,7 +15,7 @@ from .data import update_layouts, update_placeholders
 from .prompts import Content_Generator, Layout_Desc, Planner_Prompt
 from .schema import PlannerOutput
 from .tools import encode_images
-from .utils import parse_content_output, parse_planner_output
+from .utils import parse_content_output, parse_data, parse_planner_output
 
 set_default_openai_api("chat_completions")
 
@@ -95,7 +100,6 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
     print(f"Layouts planned: {layouts}")
     try:
         for layout in layouts:
-            print(layout)
             content_generator.instructions = Content_Generator.format(
                 layout_name=layout.layout,
                 title=layout.title,
@@ -108,7 +112,8 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
                 content_formatter,
                 f"Format this {content.final_output} to output schema",
             )
-            parsed_content = parse_content_output(formatted_content.final_output)
+            print(f"\nFormatted output: {formatted_content.final_output}")
+            parsed_content = parse_data(formatted_content.final_output)
             layouts_processed.append(parsed_content)
             # Remove this call from the loop
             update_placeholders(
