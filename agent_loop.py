@@ -1,6 +1,6 @@
 import asyncio
+import logging
 import os
-from logging import logger
 
 from agents import Runner
 from pymongo import MongoClient
@@ -13,8 +13,6 @@ from Agents.data import (final_update, get_chunks_for_topic,
 from Agents.schema import UnitList
 from Agents.utils import parse_data
 from Agents.validation_agents import validator
-
-logger = logger.getLogger(__name__)
 
 # This is the main agentic loop which will call the generate function
 
@@ -35,10 +33,10 @@ def main(doc_id: str):
         client=mongo_client,
         doc_id=doc_id,
     )
-    logger.info(f"Got units: {units}")
+    logging.info(f"Got units: {units}")
     for unit in units:
         topics = get_topic_ids_for_unit(unit)
-        logger.info(f"Got topics: {topics} for the unit: {unit}")
+        logging.info(f"Got topics: {topics} for the unit: {unit}")
         all_layouts_for_unit = []  # New list to store layouts from all topics
         layouts_validated = []
         for topic in topics:
@@ -46,7 +44,7 @@ def main(doc_id: str):
             content = get_chunks_for_topic(topic[0])
             layouts_processed = asyncio.run(generate(content[0][3], doc_id=doc_id))
             print(layouts_processed)
-            logger.info(f"Planned layouts for the topic: {topic[0]}")
+            logging.info(f"Planned layouts for the topic: {topic[0]}")
             all_layouts_for_unit.append(layouts_processed)
 
         try:
