@@ -1,7 +1,7 @@
+import os
 import sqlite3
 from datetime import datetime
 
-import os
 import pytz
 from bson import ObjectId
 from pymongo import MongoClient
@@ -237,3 +237,10 @@ def get_placeholders_from_mongo(client, doc_id):
     collection = db["PPT"]
     doc = collection.find_one({"_id": ObjectId(f"{doc_id}")})
     return doc.get("placeholders", [])
+
+
+def get_units_from_mongo(client, doc_id):
+    db = client["main"]
+    collection = db["PPT"]
+    doc = collection.find_one({"_id": ObjectId(f"{doc_id}")})
+    return doc.get("units", [])

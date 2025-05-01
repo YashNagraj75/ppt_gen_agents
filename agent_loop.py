@@ -5,15 +5,10 @@ from agents import Runner
 from pymongo import MongoClient
 
 from Agents.agents_new import generate
-from Agents.data import (
-    final_update,
-    get_chunks_for_topic,
-    get_subject_for_unit,
-    get_topic_ids_for_unit,
-    insert_doc,
-    update_validated_layouts,
-    get_placeholders_from_mongo,
-)
+from Agents.data import (final_update, get_chunks_for_topic,
+                         get_placeholders_from_mongo, get_subject_for_unit,
+                         get_topic_ids_for_unit, get_units_from_mongo,
+                         update_validated_layouts)
 from Agents.schema import UnitList
 from Agents.utils import parse_data
 from Agents.validation_agents import validator
@@ -32,20 +27,12 @@ async def validate_layouts(layout, content):
     return validated_layout.final_output
 
 
-def main(units: UnitList):
-    """
-    Main function to run the agentic loop.
-    :param units: List of units to process.
-    """
-    subject = get_subject_for_unit(units.units[0])
-    doc_id = insert_doc(
-        mongo_client,
-        userId=units.userId,
-        subject=subject,
+def main(doc_id: str):
+    units = get_units_from_mongo(
+        client=mongo_client,
+        doc_id=doc_id,
     )
-    print(f"Document ID: {doc_id}")
-
-    for unit in units.units:
+    for unit in units:
         topics = get_topic_ids_for_unit(unit)
         all_layouts_for_unit = []  # New list to store layouts from all topics
         layouts_validated = []
@@ -93,12 +80,4 @@ def main(units: UnitList):
             doc_id=doc_id,
             status="completed",
         )
-
-
-if __name__ == "__main__":
-    main(
-        UnitList(
-            units=[2],
-            userId="user_123",
-        )
-    )
+        return "success"
