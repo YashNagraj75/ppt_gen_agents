@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 
+from Agents.schema import Document
+
 app = FastAPI()
 
 
@@ -9,5 +11,6 @@ def ping():
 
 
 @app.post("/create")
-def create():
-    return {"message": "Document created and processed"}
+def create(document: Document):
+    print(f"Received doc_id: {document.doc_id}")
+    return {"message": f"Document: {document.doc_id} created and processed"}

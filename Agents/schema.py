@@ -42,3 +42,7 @@ class UnitList(BaseModel):
 
 class ContentOutput(BaseModel):
     data: str
+
+
+class Document(BaseModel):
+    doc_id: str

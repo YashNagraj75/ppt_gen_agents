@@ -1,12 +1,7 @@
 import os
 
-from agents import (
-    Agent,
-    ModelSettings,
-    OpenAIChatCompletionsModel,
-    Runner,
-    set_default_openai_api,
-)
+from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner,
+                    set_default_openai_api)
 from openai import AsyncOpenAI
 from pymongo import MongoClient
 
