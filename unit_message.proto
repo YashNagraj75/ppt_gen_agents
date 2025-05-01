@@ -1,0 +1,5 @@
+syntax = "proto3";
+message UnitMessage {
+  string doc_id = 1;
+}
+
