@@ -26,5 +26,6 @@ async def create(push: PubSubPush):
     if not doc_id:
         raise HTTPException(status_code=400, detail="`doc_id` missing in payload")
 
+    print(f"Received doc_id: {doc_id}")
     success = main(doc_id)
     return {"status": success}
