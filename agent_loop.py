@@ -47,7 +47,7 @@ async def main(doc_id: str):
         for topic in topics:
             print(topic[0])
             content = get_chunks_for_topic(topic[0])
-            layouts_processed = asyncio.run(generate(content[0][3], doc_id=doc_id))
+            layouts_processed = await generate(content[0][3], doc_id=doc_id)
             print(layouts_processed)
             logging.info(f"Planned layouts for the topic: {topic[0]}")
             all_layouts_for_unit.append(layouts_processed)
@@ -58,9 +58,10 @@ async def main(doc_id: str):
             )
             print(len(all_layouts))
             for layout in all_layouts:
-                validated_layout = asyncio.run(
-                    validate_layouts(layout["data"], layout["data"]["title"])
+                validated_layout = await validate_layouts(
+                    layout["data"], layout["data"]["title"]
                 )
+
                 print(f"\nValidated Layout: {validated_layout}\n")
                 layouts_parsed = parse_data(validated_layout)
                 print(f"\nParsed Layout: {layouts_parsed}\n")
