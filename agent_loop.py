@@ -6,10 +6,15 @@ from agents import Runner
 from pymongo import MongoClient
 
 from Agents.agents_new import generate
-from Agents.data import (final_update, get_chunks_for_topic,
-                         get_placeholders_from_mongo, get_subject_for_unit,
-                         get_topic_ids_for_unit, get_units_from_mongo,
-                         update_validated_layouts)
+from Agents.data import (
+    final_update,
+    get_chunks_for_topic,
+    get_placeholders_from_mongo,
+    get_subject_for_unit,
+    get_topic_ids_for_unit,
+    get_units_from_mongo,
+    update_validated_layouts,
+)
 from Agents.schema import UnitList
 from Agents.utils import parse_data
 from Agents.validation_agents import validator
@@ -28,7 +33,7 @@ async def validate_layouts(layout, content):
     return validated_layout.final_output
 
 
-def main(doc_id: str):
+async def main(doc_id: str):
     units = get_units_from_mongo(
         client=mongo_client,
         doc_id=doc_id,
