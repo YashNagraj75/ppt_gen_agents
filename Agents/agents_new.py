@@ -15,7 +15,7 @@ from .data import update_layouts, update_placeholders
 from .prompts import Content_Generator, Layout_Desc, Planner_Prompt
 from .schema import PlannerOutput
 from .tools import encode_images
-from .utils import parse_content_output, parse_data, parse_planner_output
+from .utils import parse_data, parse_planner_output
 
 set_default_openai_api("chat_completions")
 
