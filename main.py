@@ -9,7 +9,7 @@ from schema import PubSubPush
 
 app = FastAPI()
 
-logger = logging.getLogger("ppt_processor")
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 

@@ -1,8 +1,13 @@
 import logging
 import os
 
-from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner,
-                    set_default_openai_api)
+from agents import (
+    Agent,
+    ModelSettings,
+    OpenAIChatCompletionsModel,
+    Runner,
+    set_default_openai_api,
+)
 from openai import AsyncOpenAI
 from pymongo import MongoClient
 
@@ -14,7 +19,7 @@ from .tools import encode_images
 from .utils import parse_data, parse_planner_output
 
 set_default_openai_api("chat_completions")
-logger = logging.getLogger("myapp")
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 

@@ -6,10 +6,15 @@ from agents import Runner
 from pymongo import MongoClient
 
 from Agents.agents_new import generate
-from Agents.data import (final_update, get_chunks_for_topic,
-                         get_placeholders_from_mongo, get_subject_for_unit,
-                         get_topic_ids_for_unit, get_units_from_mongo,
-                         update_validated_layouts)
+from Agents.data import (
+    final_update,
+    get_chunks_for_topic,
+    get_placeholders_from_mongo,
+    get_subject_for_unit,
+    get_topic_ids_for_unit,
+    get_units_from_mongo,
+    update_validated_layouts,
+)
 from Agents.schema import UnitList
 from Agents.utils import parse_data
 from Agents.validation_agents import validator
@@ -17,7 +22,7 @@ from Agents.validation_agents import validator
 # This is the main agentic loop which will call the generate function
 mongo_client = MongoClient(os.environ.get("MONGO_URI"))
 
-logger = logging.getLogger("myapp")
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
