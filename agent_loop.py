@@ -15,10 +15,10 @@ from Agents.utils import parse_data
 from Agents.validation_agents import validator
 
 # This is the main agentic loop which will call the generate function
-
 mongo_client = MongoClient(os.environ.get("MONGO_URI"))
 
-logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("myapp")
+logger.setLevel(logging.INFO)
 
 
 async def validate_layouts(layout, content):
@@ -30,22 +30,22 @@ async def validate_layouts(layout, content):
     return validated_layout.final_output
 
 
-def main(doc_id: str):
+async def main(doc_id: str):
     units = get_units_from_mongo(
         client=mongo_client,
         doc_id=doc_id,
     )
-    logging.info(f"Got units: {units}")
+    logger.info(f"Got units: {units}")
     for unit in units:
         topics = get_topic_ids_for_unit(unit)
-        logging.info(f"Got topics: {topics} for the unit: {unit}")
+        logger.info(f"Got topics: {topics} for the unit: {unit}")
         all_layouts_for_unit = []  # New list to store layouts from all topics
         layouts_validated = []
         for topic in topics:
             content = get_chunks_for_topic(topic[0])
-            layouts_processed = asyncio.run(generate(content[0][3], doc_id=doc_id))
-            logging.info(f"Generated layouts: {layouts_processed}")
-            logging.info(f"Planned layouts for the topic: {topic[0]}")
+            layouts_processed = await generate(content[0][3], doc_id=doc_id)
+            logger.info(f"Generated layouts: {layouts_processed}")
+            logger.info(f"Planned layouts for the topic: {topic[0]}")
             all_layouts_for_unit.append(layouts_processed)
 
         try:
@@ -53,13 +53,13 @@ def main(doc_id: str):
                 client=mongo_client, doc_id=doc_id
             )
             for layout in all_layouts:
-                validated_layout = asyncio.run(
-                    validate_layouts(layout["data"], layout["data"]["title"])
+                validated_layout = await validate_layouts(
+                    layout["data"], layout["data"]["title"]
                 )
 
-                logging.info(f"Validated Layout: {validated_layout}")
+                logger.info(f"Validated Layout: {validated_layout}")
                 layouts_parsed = parse_data(validated_layout)
-                logging.info(f"Parsed Layout: {layouts_parsed}")
+                logger.info(f"Parsed Layout: {layouts_parsed}")
                 layouts_validated.append(layouts_parsed)
                 update_validated_layouts(
                     mongo_client,

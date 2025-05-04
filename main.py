@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 
@@ -8,9 +9,17 @@ from schema import PubSubPush
 
 app = FastAPI()
 
+logger = logging.getLogger("ppt_processor")
+logger.setLevel(logging.INFO)
 
-def process_ppt(doc_id: str):
-    main(doc_id)
+
+async def process_ppt(doc_id: str):
+    try:
+        logger.info(f"✔️ Starting processing for doc_id: {doc_id}")
+        await main(doc_id)  # your real work
+        logger.info(f"Finished processing for doc_id: {doc_id}")
+    except Exception:
+        logger.exception(f"Failed processing for doc_id: {doc_id}")
 
 
 @app.get("/ping")
