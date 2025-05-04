@@ -18,7 +18,6 @@ def get_topics_for_unit(unit_id: int):
 
         cursor.execute(f"SELECT * from topics where unit_id={unit_id}")
         rows = cursor.fetchall()
-        print(rows)
         return rows
 
     except sqlite3.Error as e:

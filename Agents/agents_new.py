@@ -1,3 +1,4 @@
+import logging
 import os
 
 from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner,
@@ -92,7 +93,6 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
         )
         return
 
-    print(f"Layouts planned: {layouts}")
     try:
         for layout in layouts:
             content_generator.instructions = Content_Generator.format(
