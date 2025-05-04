@@ -1,8 +1,7 @@
-import asyncio
 import base64
 import json
 
-from fastapi import FastAPI, HTTPException
+from fastapi import BackgroundTasks, FastAPI, HTTPException
 
 from agent_loop import main
 from schema import PubSubPush
@@ -16,9 +15,10 @@ def ping():
 
 
 @app.post("/create")
-async def create(push: PubSubPush):
+async def create(push: PubSubPush, background_tasks: BackgroundTasks):
+    # decode Pub/Sub wrapper
     try:
-        decoded = base64.b64decode(push.message.data).decode("utf-8")
+        decoded = base64.b64decode(push.message.data).decode("utf‑8")
         payload = json.loads(decoded)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid message data: {e}")
@@ -27,6 +27,6 @@ async def create(push: PubSubPush):
     if not doc_id:
         raise HTTPException(status_code=400, detail="`doc_id` missing in payload")
 
-    print(f"Received doc_id: {doc_id}")
-    asyncio.create_task(main(doc_id))
-    return {"status": "started"}
+    background_tasks.add_task(main, doc_id)
+
+    return {"status": "acknowledged", "doc_id": doc_id}
