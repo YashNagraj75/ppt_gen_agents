@@ -18,6 +18,8 @@ from Agents.validation_agents import validator
 
 mongo_client = MongoClient(os.environ.get("MONGO_URI"))
 
+logging.basicConfig(level=logging.INFO)
+
 
 async def validate_layouts(layout, content):
     """Async function to validate a layout."""
@@ -50,15 +52,14 @@ def main(doc_id: str):
             all_layouts = get_placeholders_from_mongo(
                 client=mongo_client, doc_id=doc_id
             )
-            print(len(all_layouts))
             for layout in all_layouts:
                 validated_layout = asyncio.run(
                     validate_layouts(layout["data"], layout["data"]["title"])
                 )
 
-                print(f"\nValidated Layout: {validated_layout}\n")
+                logging.info(f"Validated Layout: {validated_layout}")
                 layouts_parsed = parse_data(validated_layout)
-                print(f"\nParsed Layout: {layouts_parsed}\n")
+                logging.info(f"Parsed Layout: {layouts_parsed}")
                 layouts_validated.append(layouts_parsed)
                 update_validated_layouts(
                     mongo_client,
