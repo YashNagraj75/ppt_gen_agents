@@ -40,10 +40,9 @@ def main(doc_id: str):
         all_layouts_for_unit = []  # New list to store layouts from all topics
         layouts_validated = []
         for topic in topics:
-            print(topic[0])
             content = get_chunks_for_topic(topic[0])
             layouts_processed = asyncio.run(generate(content[0][3], doc_id=doc_id))
-            print(layouts_processed)
+            logging.info(f"Generated layouts: {layouts_processed}")
             logging.info(f"Planned layouts for the topic: {topic[0]}")
             all_layouts_for_unit.append(layouts_processed)
 
