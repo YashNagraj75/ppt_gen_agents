@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import json
 
@@ -27,5 +28,5 @@ async def create(push: PubSubPush):
         raise HTTPException(status_code=400, detail="`doc_id` missing in payload")
 
     print(f"Received doc_id: {doc_id}")
-    success = await main(doc_id)
-    return {"status": success}
+    asyncio.create_task(main(doc_id))
+    return {"status": "started"}
