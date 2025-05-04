@@ -6,15 +6,10 @@ from agents import Runner
 from pymongo import MongoClient
 
 from Agents.agents_new import generate
-from Agents.data import (
-    final_update,
-    get_chunks_for_topic,
-    get_placeholders_from_mongo,
-    get_subject_for_unit,
-    get_topic_ids_for_unit,
-    get_units_from_mongo,
-    update_validated_layouts,
-)
+from Agents.data import (final_update, get_chunks_for_topic,
+                         get_placeholders_from_mongo, get_subject_for_unit,
+                         get_topic_ids_for_unit, get_units_from_mongo,
+                         update_validated_layouts)
 from Agents.schema import UnitList
 from Agents.utils import parse_data
 from Agents.validation_agents import validator
@@ -33,7 +28,7 @@ async def validate_layouts(layout, content):
     return validated_layout.final_output
 
 
-async def main(doc_id: str):
+def main(doc_id: str):
     units = get_units_from_mongo(
         client=mongo_client,
         doc_id=doc_id,
@@ -47,7 +42,7 @@ async def main(doc_id: str):
         for topic in topics:
             print(topic[0])
             content = get_chunks_for_topic(topic[0])
-            layouts_processed = await generate(content[0][3], doc_id=doc_id)
+            layouts_processed = asyncio.run(generate(content[0][3], doc_id=doc_id))
             print(layouts_processed)
             logging.info(f"Planned layouts for the topic: {topic[0]}")
             all_layouts_for_unit.append(layouts_processed)
@@ -58,8 +53,8 @@ async def main(doc_id: str):
             )
             print(len(all_layouts))
             for layout in all_layouts:
-                validated_layout = await validate_layouts(
-                    layout["data"], layout["data"]["title"]
+                validated_layout = asyncio.run(
+                    validate_layouts(layout["data"], layout["data"]["title"])
                 )
 
                 print(f"\nValidated Layout: {validated_layout}\n")

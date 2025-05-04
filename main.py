@@ -9,6 +9,10 @@ from schema import PubSubPush
 app = FastAPI()
 
 
+def process_ppt(doc_id: str):
+    main(doc_id)
+
+
 @app.get("/ping")
 def ping():
     return {"pong"}
@@ -16,7 +20,6 @@ def ping():
 
 @app.post("/create")
 async def create(push: PubSubPush, background_tasks: BackgroundTasks):
-    # decode Pub/Sub wrapper
     try:
         decoded = base64.b64decode(push.message.data).decode("utf‑8")
         payload = json.loads(decoded)
@@ -27,6 +30,6 @@ async def create(push: PubSubPush, background_tasks: BackgroundTasks):
     if not doc_id:
         raise HTTPException(status_code=400, detail="`doc_id` missing in payload")
 
-    background_tasks.add_task(main, doc_id)
+    background_tasks.add_task(process_ppt, doc_id)
 
     return {"status": "acknowledged", "doc_id": doc_id}
