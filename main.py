@@ -1,44 +1,28 @@
-import base64
 import json
-import logging
+import os
+import uuid
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException
+from google.cloud import batch_v1
 
-from agent_loop import main
-from schema import PubSubPush
+from schema import Input
 
 app = FastAPI()
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+client = batch_v1.BatchServiceClient()
+parent = "projects/edunova-455712/locations/asia-south1"
 
 
-async def process_ppt(doc_id: str):
-    try:
-        logger.info(f"✔️ Starting processing for doc_id: {doc_id}")
-        await main(doc_id)  # your real work
-        logger.info(f"Finished processing for doc_id: {doc_id}")
-    except Exception:
-        logger.exception(f"Failed processing for doc_id: {doc_id}")
+@app.post("/create", status_code=202)
+async def create(input: Input, background_tasks: BackgroundTasks):
+    doc_id = input.doc_id
+    job_name = f"job-{uuid.uuid4().hex}"
+
+    background_tasks.add_task(submit)
+    return {"status": "scheduled", "job_name": job_name}
 
 
-@app.get("/ping")
-def ping():
-    return {"pong"}
-
-
-@app.post("/create")
-async def create(push: PubSubPush, background_tasks: BackgroundTasks):
-    try:
-        decoded = base64.b64decode(push.message.data).decode("utf‑8")
-        payload = json.loads(decoded)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Invalid message data: {e}")
-
-    doc_id = payload.get("doc_id")
-    if not doc_id:
-        raise HTTPException(status_code=400, detail="`doc_id` missing in payload")
-
-    background_tasks.add_task(process_ppt, doc_id)
-
-    return {"status": "acknowledged", "doc_id": doc_id}
+@app.get("/status/{job_name}")
+def status(job_name: str):
+    job = client.get_job(name=f"{parent}/jobs/{job_name}")
+    return {"state": job.status.state.name}

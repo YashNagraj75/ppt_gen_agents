@@ -13,3 +13,7 @@ class PubSubMessage(BaseModel):
 class PubSubPush(BaseModel):
     message: PubSubMessage
     subscription: str
+
+
+class Input(BaseModel):
+    doc_id: str

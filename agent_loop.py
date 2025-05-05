@@ -1,28 +1,22 @@
 import asyncio
 import logging
 import os
+import sys
 
 from agents import Runner
 from pymongo import MongoClient
 
 from Agents.agents_new import generate
-from Agents.data import (
-    final_update,
-    get_chunks_for_topic,
-    get_placeholders_from_mongo,
-    get_subject_for_unit,
-    get_topic_ids_for_unit,
-    get_units_from_mongo,
-    update_validated_layouts,
-)
-from Agents.schema import UnitList
+from Agents.data import (final_update, get_chunks_for_topic,
+                         get_placeholders_from_mongo, get_topic_ids_for_unit,
+                         get_units_from_mongo, update_validated_layouts)
 from Agents.utils import parse_data
 from Agents.validation_agents import validator
 
 # This is the main agentic loop which will call the generate function
 mongo_client = MongoClient(os.environ.get("MONGO_URI"))
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
@@ -41,13 +35,16 @@ async def main(doc_id: str):
         doc_id=doc_id,
     )
     logger.info(f"Got units: {units}")
+    print(f"Got units: {units}")
     for unit in units:
         topics = get_topic_ids_for_unit(unit)
+        print(f"Got topics: {topics} for the unit: {unit}")
         logger.info(f"Got topics: {topics} for the unit: {unit}")
         all_layouts_for_unit = []  # New list to store layouts from all topics
         layouts_validated = []
         for topic in topics:
             content = get_chunks_for_topic(topic[0])
+            print(f"Got content for the topic: {topic[0]}")
             layouts_processed = await generate(content[0][3], doc_id=doc_id)
             logger.info(f"Generated layouts: {layouts_processed}")
             logger.info(f"Planned layouts for the topic: {topic[0]}")
@@ -63,8 +60,16 @@ async def main(doc_id: str):
                 )
 
                 logger.info(f"Validated Layout: {validated_layout}")
-                layouts_parsed = parse_data(validated_layout)
-                logger.info(f"Parsed Layout: {layouts_parsed}")
+                try:
+                    layouts_parsed = parse_data(validated_layout)
+                    layouts_validated.append(layouts_parsed)
+                    logger.info(f"Parsed Layout: {layouts_parsed}")
+                except Exception as parse_error:
+                    print(f"Error parsing validation result: {parse_error}")
+                    logger.error(f"Error parsing validation result: {parse_error}")
+                    print(f"Raw validation result: {validated_layout}")
+                    logger.error(f"Raw validation result: {validated_layout}")
+                    continue
                 layouts_validated.append(layouts_parsed)
                 update_validated_layouts(
                     mongo_client,
@@ -78,7 +83,7 @@ async def main(doc_id: str):
             update_validated_layouts(
                 mongo_client,
                 doc_id,
-                [],  # Pass an empty list or handle differently
+                [],
                 "failed during content validation",
                 str(e),
             )
@@ -91,3 +96,19 @@ async def main(doc_id: str):
             status="completed",
         )
         return "success"
+
+
+async def run_and_cleanup(doc_id: str):
+    result = await main(doc_id)
+    if result != "success":
+        sys.exit(1)
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: agent_loop.py <doc_id>", file=sys.stderr)
+        sys.exit(1)
+    _, doc_id = sys.argv
+    print(f"Running agent loop for doc_id: {doc_id}")
+    asyncio.run(run_and_cleanup(doc_id))

@@ -1,13 +1,8 @@
 import logging
 import os
 
-from agents import (
-    Agent,
-    ModelSettings,
-    OpenAIChatCompletionsModel,
-    Runner,
-    set_default_openai_api,
-)
+from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner,
+                    set_default_openai_api)
 from openai import AsyncOpenAI
 from pymongo import MongoClient
 
@@ -19,7 +14,7 @@ from .tools import encode_images
 from .utils import parse_data, parse_planner_output
 
 set_default_openai_api("chat_completions")
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("google.cloud.pubsub_v1")
 logger.setLevel(logging.INFO)
 
 
@@ -84,6 +79,7 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
         parsed_layouts = parse_planner_output(layouts)
         layouts_planned.append(parsed_layouts)
         logger.info(f"Layouts planned: {layouts_planned}")
+        print(f"Layouts planned: {layouts_planned}")
         update_layouts(
             mongo_client,
             doc_id,
@@ -135,5 +131,6 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
             "failed during content generation",
             str(e),
         )
+        return
 
     return layouts_processed
