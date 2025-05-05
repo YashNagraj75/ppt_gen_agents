@@ -23,8 +23,8 @@
 					"cpuMilli": 250,
 					"memoryMib": 614
 				},
-				"maxRetryCgunt": 1,
-				"maxRunDuration": "1800s"
+				"maxRetryCount": 1,
+				"maxRunDuration": "1200s"
 			},
 			"taskCount": 1,
 			"parallelism": 1
