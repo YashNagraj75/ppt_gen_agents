@@ -7,11 +7,7 @@
 						"container": {
 							"imageUri": "asia-south1-docker.pkg.dev/edunova-455712/ppt-gen-agents/worker:latest",
 							"entrypoint": "python",
-							"commands": [
-								"agent_loop.py",
-								"68137a8704ae7d993d78ea20",
-								"new_job"
-							]
+							"commands": ["agent_loop.py", "68137a8704ae7d993d78ea20"]
 						},
 						"environment": {
 							"variables": {

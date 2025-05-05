@@ -22,7 +22,7 @@ async def submit_batch_job(doc_id: str) -> str:
     container = Runnable.Container(
         image_uri="asia-south1-docker.pkg.dev/edunova-455712/fastapi-batch-repo/worker:latest",
         entrypoint="python",
-        commands=["agent_loop.py", doc_id, job_id],
+        commands=["agent_loop.py", doc_id],
     )
     runnable = Runnable(container=container)
 
@@ -33,7 +33,6 @@ async def submit_batch_job(doc_id: str) -> str:
 
     compute = ComputeResource(cpu_milli=250, memory_mib=614)
 
-    # 6. Build TaskSpec with retry & timeout
     task_spec = TaskSpec(
         runnables=[runnable],
         compute_resource=compute,
@@ -44,7 +43,11 @@ async def submit_batch_job(doc_id: str) -> str:
     alloc = AllocationPolicy(
         instances=[AllocationPolicy.InstancePolicy(machine_type="f1-micro")]
     )
-    job = Job(task_groups=[task_group], allocation_policy=alloc)
+    job = Job()
+    job.task_groups = [task_group]
+    job.allocation_policy = alloc
+    job.logs_policy = batch_v1.LogsPolicy()
+    job.logs_policy.destination = batch_v1.LogsPolicy.Destination.CLOUD_LOGGING
 
     response = await client.create_job(
         request={"parent": parent, "job_id": job_id, "job": job}
