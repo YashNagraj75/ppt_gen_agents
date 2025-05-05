@@ -12,6 +12,7 @@ client = batch_v1.BatchServiceClient()
 @app.post("/create", status_code=202)
 async def create(input: Input):
     doc_id = input.doc_id
+    print(f"Received doc_id: {doc_id}")
     job_name = await submit_batch_job(doc_id)
     return {"status": "scheduled", "job_name": job_name}
 
