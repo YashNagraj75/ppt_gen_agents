@@ -43,7 +43,7 @@ async def submit_batch_job(doc_id: str) -> str:
         runnables=[runnable],
         compute_resource=compute,
         max_retry_count=1,
-        max_run_duration="3600s",
+        max_run_duration="1800s",
     )
     task_group = TaskGroup(task_spec=task_spec, task_count=1, parallelism=1)
     alloc = AllocationPolicy(

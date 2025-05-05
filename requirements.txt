@@ -14,7 +14,11 @@ google-api-core==2.24.2
 google-api-python-client==2.167.0
 google-auth==2.39.0
 google-auth-httplib2==0.2.0
+google-cloud-appengine-logging==1.6.1
+google-cloud-audit-log==0.3.2
 google-cloud-batch==0.17.35
+google-cloud-core==2.4.3
+google-cloud-logging==3.12.1
 google-cloud-pubsub==2.29.0
 google-genai==1.11.0
 googleapis-common-protos==1.70.0

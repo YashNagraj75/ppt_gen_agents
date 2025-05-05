@@ -8,6 +8,7 @@ dependencies = [
     "fastapi>=0.115.12",
     "google-api-python-client>=2.167.0",
     "google-cloud-batch>=0.17.35",
+    "google-cloud-logging>=3.12.1",
     "google-cloud-pubsub>=2.29.0",
     "google-genai>=1.11.0",
     "openai>=1.71.0",

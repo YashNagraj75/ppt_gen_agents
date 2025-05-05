@@ -1,23 +1,28 @@
 import asyncio
-import logging
 import os
 import sys
 
 from agents import Runner
+from google.cloud import logging
 from pymongo import MongoClient
 
 from Agents.agents_new import generate
-from Agents.data import (final_update, get_chunks_for_topic,
-                         get_placeholders_from_mongo, get_topic_ids_for_unit,
-                         get_units_from_mongo, update_validated_layouts)
+from Agents.data import (
+    final_update,
+    get_chunks_for_topic,
+    get_placeholders_from_mongo,
+    get_topic_ids_for_unit,
+    get_units_from_mongo,
+    update_validated_layouts,
+)
 from Agents.utils import parse_data
 from Agents.validation_agents import validator
 
 # This is the main agentic loop which will call the generate function
 mongo_client = MongoClient(os.environ.get("MONGO_URI"))
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+log_client = logging.Client(project="edunova-455712")
+logger = log_client.logger("batch_task_logs")
 
 
 async def validate_layouts(layout, content):
@@ -34,20 +39,20 @@ async def main(doc_id: str):
         client=mongo_client,
         doc_id=doc_id,
     )
-    logger.info(f"Got units: {units}")
+    logger.log_text(f"Got units: {units}")
     print(f"Got units: {units}")
     for unit in units:
         topics = get_topic_ids_for_unit(unit)
         print(f"Got topics: {topics} for the unit: {unit}")
-        logger.info(f"Got topics: {topics} for the unit: {unit}")
+        logger.log_text(f"Got topics: {topics} for the unit: {unit}")
         all_layouts_for_unit = []  # New list to store layouts from all topics
         layouts_validated = []
         for topic in topics:
             content = get_chunks_for_topic(topic[0])
             print(f"Got content for the topic: {topic[0]}")
             layouts_processed = await generate(content[0][3], doc_id=doc_id)
-            logger.info(f"Generated layouts: {layouts_processed}")
-            logger.info(f"Planned layouts for the topic: {topic[0]}")
+            logger.log_text(f"Generated layouts: {layouts_processed}")
+            logger.log_text(f"Planned layouts for the topic: {topic[0]}")
             all_layouts_for_unit.append(layouts_processed)
 
         try:
@@ -59,16 +64,16 @@ async def main(doc_id: str):
                     layout["data"], layout["data"]["title"]
                 )
 
-                logger.info(f"Validated Layout: {validated_layout}")
+                logger.log_text(f"Validated Layout: {validated_layout}")
                 try:
                     layouts_parsed = parse_data(validated_layout)
                     layouts_validated.append(layouts_parsed)
-                    logger.info(f"Parsed Layout: {layouts_parsed}")
+                    logger.log_text(f"Parsed Layout: {layouts_parsed}")
                 except Exception as parse_error:
                     print(f"Error parsing validation result: {parse_error}")
-                    logger.error(f"Error parsing validation result: {parse_error}")
+                    logger.log_text(f"Error parsing validation result: {parse_error}")
                     print(f"Raw validation result: {validated_layout}")
-                    logger.error(f"Raw validation result: {validated_layout}")
+                    logger.log_text(f"Raw validation result: {validated_layout}")
                     continue
                 layouts_validated.append(layouts_parsed)
                 update_validated_layouts(

@@ -1,8 +1,14 @@
 import logging
 import os
 
-from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner,
-                    set_default_openai_api)
+from agents import (
+    Agent,
+    ModelSettings,
+    OpenAIChatCompletionsModel,
+    Runner,
+    set_default_openai_api,
+)
+from google.cloud import logging
 from openai import AsyncOpenAI
 from pymongo import MongoClient
 
@@ -14,8 +20,8 @@ from .tools import encode_images
 from .utils import parse_data, parse_planner_output
 
 set_default_openai_api("chat_completions")
-logger = logging.getLogger("google.cloud.pubsub_v1")
-logger.setLevel(logging.INFO)
+log_client = logging.Client(project="edunova-455712")
+logger = log_client.logger("generator_logs")
 
 
 mongo_client = MongoClient(os.environ.get("MONGO_URI"))
@@ -78,8 +84,7 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
         layouts = layout_result.final_output
         parsed_layouts = parse_planner_output(layouts)
         layouts_planned.append(parsed_layouts)
-        logger.info(f"Layouts planned: {layouts_planned}")
-        print(f"Layouts planned: {layouts_planned}")
+        logger.log_text(f"Layouts planned: {layouts_planned}")
         update_layouts(
             mongo_client,
             doc_id,
@@ -106,16 +111,15 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
                 layouts=Layout_Desc,
             )
             content = await Runner.run(content_generator, "Make the slide layout")
-            logger.info(f"Content generated: {content}")
+            logger.log_text(f"Content generated: {content}")
             formatted_content = await Runner.run(
                 content_formatter,
                 f"Format this {content.final_output} to output schema",
             )
-            print(f"\nFormatted output: {formatted_content.final_output}")
+            logger.log_text(f"Formatted output: {formatted_content.final_output}")
             parsed_content = parse_data(formatted_content.final_output)
             layouts_processed.append(parsed_content)
-            logger.info(f"Layouts processed: {layouts_processed}")
-            # Remove this call from the loop
+            logger.log_text(f"Layouts processed: {layouts_processed}")
             update_placeholders(
                 mongo_client,
                 doc_id,
