@@ -2,8 +2,14 @@ import os
 import uuid
 
 from google.cloud import batch_v1
-from google.cloud.batch_v1.types import (AllocationPolicy, ComputeResource,
-                                         Job, Runnable, TaskGroup, TaskSpec)
+from google.cloud.batch_v1.types import (
+    AllocationPolicy,
+    ComputeResource,
+    Job,
+    Runnable,
+    TaskGroup,
+    TaskSpec,
+)
 
 
 async def submit_batch_job(doc_id: str) -> str:
@@ -20,7 +26,7 @@ async def submit_batch_job(doc_id: str) -> str:
     job_id = f"job-{uuid.uuid4().hex}"
 
     container = Runnable.Container(
-        image_uri="asia-south1-docker.pkg.dev/edunova-455712/fastapi-batch-repo/worker:latest",
+        image_uri="asia-south1-docker.pkg.dev/edunova-455712/ppt-gen-agents/worker:latest",
         entrypoint="python",
         commands=["agent_loop.py", doc_id],
     )

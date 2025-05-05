@@ -24,7 +24,7 @@
 					"memoryMib": 614
 				},
 				"maxRetryCount": 1,
-				"maxRunDuration": "3600s"
+				"maxRunDuration": "1800s"
 			},
 			"taskCount": 1,
 			"parallelism": 1
@@ -38,5 +38,8 @@
 				}
 			}
 		]
+	},
+	"logsPolicy": {
+		"destination": "CLOUD_LOGGING"
 	}
 }
