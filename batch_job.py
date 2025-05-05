@@ -46,12 +46,17 @@ async def submit_batch_job(doc_id: str) -> str:
         max_run_duration="1800s",
     )
     task_group = TaskGroup(task_spec=task_spec, task_count=1, parallelism=1)
-    alloc = AllocationPolicy(
-        instances=[AllocationPolicy.InstancePolicy(machine_type="f1-micro")]
-    )
+
+    allocation_policy = batch_v1.AllocationPolicy()
+    policy = batch_v1.AllocationPolicy.InstancePolicy()
+    policy.machine_type = "f1-micro"
+    instances = batch_v1.AllocationPolicy.InstancePolicyOrTemplate()
+    instances.policy = policy
+    allocation_policy.instances = [instances]
+
     job = Job()
     job.task_groups = [task_group]
-    job.allocation_policy = alloc
+    job.allocation_policy = allocation_policy
     job.logs_policy = batch_v1.LogsPolicy()
     job.logs_policy.destination = batch_v1.LogsPolicy.Destination.CLOUD_LOGGING
 
