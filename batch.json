@@ -1,0 +1,46 @@
+{
+	"taskGroups": [
+		{
+			"taskSpec": {
+				"runnables": [
+					{
+						"container": {
+							"imageUri": "asia-south1-docker.pkg.dev/edunova-455712/ppt-gen-agents/worker:latest",
+							"entrypoint": "python",
+							"commands": [
+								"agent_loop.py",
+								"68137a8704ae7d993d78ea20",
+								"new_job"
+							]
+						},
+						"environment": {
+							"variables": {
+								"MONGO_URI": "mongodb+srv://sujay1844:p1cFYY9OP6062xDw@serverlessinstance0.ycj0ic4.mongodb.net/?retryWrites=true&w=majority",
+								"GEMINI_API_KEY": "AIzaSyDV-VXtQIPXmZV6F8VXiuYHkunMGBvKyIE",
+								"OPENAI_API_KEY": "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",
+								"CSE_ID": "34b4b9e66f9e74ad2"
+							}
+						}
+					}
+				],
+				"computeResource": {
+					"cpuMilli": 250,
+					"memoryMib": 614
+				},
+				"maxRetryCount": 1,
+				"maxRunDuration": "3600s"
+			},
+			"taskCount": 1,
+			"parallelism": 1
+		}
+	],
+	"allocationPolicy": {
+		"instances": [
+			{
+				"policy": {
+					"machineType": "f1-micro"
+				}
+			}
+		]
+	}
+}
