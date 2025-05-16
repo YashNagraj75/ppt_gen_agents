@@ -51,7 +51,7 @@ def encode_images():
 
 
 @function_tool
-def get_image_description(query: str, num_images: int) -> list[str]:
+def get_image_description(query: str, num_images: int):
     """
     Fetch image URLs from Google Custom Search API
 
@@ -76,7 +76,8 @@ def get_image_description(query: str, num_images: int) -> list[str]:
             .list(q=query, cx=cse_id, searchType="image", num=num_images)
             .execute()
         )
-    except Exception:
+    except Exception as e:
+        print(f"Error fetching images: {e}")
         return []
 
     # Extract and return image URL

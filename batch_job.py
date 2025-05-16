@@ -2,14 +2,8 @@ import os
 import uuid
 
 from google.cloud import batch_v1
-from google.cloud.batch_v1.types import (
-    AllocationPolicy,
-    ComputeResource,
-    Job,
-    Runnable,
-    TaskGroup,
-    TaskSpec,
-)
+from google.cloud.batch_v1.types import (AllocationPolicy, ComputeResource,
+                                         Job, Runnable, TaskGroup, TaskSpec)
 
 
 async def submit_batch_job(doc_id: str) -> str:
