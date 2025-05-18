@@ -14,8 +14,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t asia-south1-docker.pkg.dev/edunova-1/ppt-gen-agents/api:latest .
+          docker build -t asia-south1-docker.pkg.dev/edunova-455712/ppt-gen-agents/api:latest .
 
       - name: Push Docker image
         run: |
-          docker push asia-south1-docker.pkg.dev/edunova-1/ppt-gen-agents/api:latest
+          docker push asia-south1-docker.pkg.dev/edunova-455712/ppt-gen-agents/api:latest
