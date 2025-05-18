@@ -2,3 +2,8 @@
 .envrc
 .python-version
 __pycache__/
+.terraform/
+terraform.*
+.terraform.*
+plan.out
+

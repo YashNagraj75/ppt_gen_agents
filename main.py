@@ -21,3 +21,8 @@ async def create(input: Input):
 def status(job_name: str):
     job = client.get_job(name=f"edunova-455712/jobs/{job_name}")
     return {"state": job.status.state.name}
+
+
+@app.get("/ping")
+def ping():
+    return {"status": "ok"}
