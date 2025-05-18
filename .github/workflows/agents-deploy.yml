@@ -24,6 +24,13 @@ jobs:
           workload_identity_provider: projects/964317129318/locations/global/workloadIdentityPools/github-pool/providers/github-provider
           service_account: github-actions-sa@edunova-455712.iam.gserviceaccount.com
           token_format: access_token
+      - name: Docker Auth
+        id: docker-auth
+        uses: docker/login-action@v3
+        with:
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+          registry: ${{ vars.REGION }}-docker.pkg.dev
 
       - name: Build Docker image
         run: |
