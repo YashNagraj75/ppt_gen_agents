@@ -25,7 +25,7 @@ variable "api_image_url" {
 }
 
 variable "service_name" {
-  default = "fastapi-cloud-run"
+  default = "ppt-gen-agents"
 }
 
 resource "google_cloud_run_service" "default" {
