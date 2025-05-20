@@ -41,7 +41,8 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GEMINI_API_KEY"
-          value = var.GEMINI_API_KEY } 
+          value = var.GEMINI_API_KEY
+        } 
         env {
           name  = "OPENAI_API_KEY"
           value = var.OPENAI_API_KEY

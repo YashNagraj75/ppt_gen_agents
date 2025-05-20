@@ -1,3 +1,4 @@
+import json
 import os
 import sqlite3
 from datetime import datetime
@@ -243,3 +244,28 @@ def get_units_from_mongo(client, doc_id):
     collection = db["PPT"]
     doc = collection.find_one({"_id": ObjectId(f"{doc_id}")})
     return doc.get("units", [])
+
+
+def get_presentation(doc_id):
+    try:
+        db = mongo_client["main"]
+        collection = db["PPT"]
+        doc = collection.find_one({"_id": ObjectId(doc_id)})
+
+        if doc:
+            serialized_doc = {}
+            for key, value in doc.items():
+                if key == "_id":
+                    serialized_doc[key] = str(value)
+                elif isinstance(value, ObjectId):
+                    serialized_doc[key] = str(value)
+                elif isinstance(value, datetime):
+                    serialized_doc[key] = value.strftime("%Y-%m-%d %H:%M:%S")
+                else:
+                    serialized_doc[key] = value
+
+            return serialized_doc
+        return None
+    except Exception as e:
+        print(f"Error fetching presentation: {e}")
+        return None

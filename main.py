@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from google.cloud import batch_v1
 
+from Agents.data import get_presentation
 from batch_job import submit_batch_job
 from schema import Input
 
@@ -21,6 +22,12 @@ async def create(input: Input):
 def status(job_name: str):
     job = client.get_job(name=f"edunova-455712/jobs/{job_name}")
     return {"state": job.status.state.name}
+
+
+@app.get("/presentation/{doc_id}")
+def presentation(doc_id: str):
+    result = get_presentation(doc_id)
+    return result
 
 
 @app.get("/ping")
