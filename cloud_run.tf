@@ -41,19 +41,18 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GEMINI_API_KEY"
-          value = "AIzaSyDV-VXtQIPXmZV6F8VXiuYHkunMGBvKyIE"
-        }
+          value = var.GEMINI_API_KEY } 
         env {
           name  = "OPENAI_API_KEY"
-          value = "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"
+          value = var.OPENAI_API_KEY
         }
         env {
           name  = "CSE_ID"
-          value = "34b4b9e66f9e74ad2"
+          value = var.CSE_ID
         }
         env {
           name  = "MONGO_URI"
-          value = "mongodb+srv://sujay1844:p1cFYY9OP6062xDw@serverlessinstance0.ycj0ic4.mongodb.net/?retryWrites=true&w=majority"
+          value = var.MONGO_URI
         }
       }
     }
