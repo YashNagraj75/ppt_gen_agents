@@ -12,7 +12,7 @@ permissions:
 
 env:
   SERVICE_NAME: ${{ github.ref_name == 'dev' && format('{0}-dev', vars.SERVICE_NAME) || vars.SERVICE_NAME }}
-  IMAGE_NAME: ${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/api
+  IMAGE_NAME: ${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}
 
 jobs:
   build-and-push:
@@ -46,7 +46,17 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}/api:latest
+      
+      - name: Build, tag and push Worker container
+        id: build-worker-image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile.worker
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}/worker:latest
 
       - name: Deploy to Cloud Run
         id: deploy
@@ -54,4 +64,4 @@ jobs:
         with:
           service: ${{ env.SERVICE_NAME }}
           region: ${{ vars.REGION }}
-          image: ${{ env.IMAGE_NAME }}:latest
+          image: ${{ env.IMAGE_NAME }}/api:latest
