@@ -224,7 +224,7 @@ def final_update(client, doc_id, status):
             {
                 "$set": {
                     "status": status,
-                    "finish_time": time.strftime("%Y-%m-%d %H:%M:%S %Z%z"),
+                    "end_time": time.strftime("%Y-%m-%d %H:%M:%S %Z%z"),
                 }
             },
         )
@@ -268,4 +268,18 @@ def get_presentation(doc_id):
         return None
     except Exception as e:
         print(f"Error fetching presentation: {e}")
+        return None
+
+
+def get_presentation_by_uid(user_id: str, limit: int = None):
+    try:
+        db = mongo_client["main"]
+        collection = db["PPT"]
+        docs_cursor = collection.find({"userId": user_id}).limit(limit)
+        docs = list(docs_cursor)
+        for doc in docs:
+            doc["_id"] = str(doc["_id"])
+        return docs
+    except Exception as e:
+        print(f"Error fetching presentations: {e}")
         return None

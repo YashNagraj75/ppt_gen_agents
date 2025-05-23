@@ -1,13 +1,8 @@
 import logging
 import os
 
-from agents import (
-    Agent,
-    ModelSettings,
-    OpenAIChatCompletionsModel,
-    Runner,
-    set_default_openai_api,
-)
+from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner,
+                    set_default_openai_api)
 from google.cloud import logging
 from openai import AsyncOpenAI
 from pymongo import MongoClient
@@ -42,7 +37,7 @@ create_slide = Agent(
 planner = Agent(
     name="Slide Layout Planner",
     model=OpenAIChatCompletionsModel(
-        "gemini-2.5-flash-preview-04-17", openai_client=client
+        "gemini-2.5-flash-preview-05-20", openai_client=client
     ),
     instructions=Planner_Prompt.format(
         templates=Layout_Desc,

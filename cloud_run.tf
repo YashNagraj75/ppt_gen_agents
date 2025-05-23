@@ -28,6 +28,27 @@ variable "service_name" {
   default = "ppt-gen-agents"
 }
 
+variable "GEMINI_API_KEY" {
+  description = "Gemini API Key"
+  type        = string
+  sensitive   = true
+}
+variable "OPENAI_API_KEY" {
+  description = "OpenAI API Key"
+  type        = string
+  sensitive   = true
+}
+variable "CSE_ID" {
+  description = "Custom Search Engine ID"
+  type        = string
+  sensitive   = true
+}
+variable "MONGO_URI" {
+  description = "MongoDB URI"
+  type        = string
+  sensitive   = true
+}
+
 resource "google_cloud_run_service" "default" {
   name     = var.service_name
   location = var.region
