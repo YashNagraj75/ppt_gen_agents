@@ -63,7 +63,7 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "GEMINI_API_KEY"
           value = var.GEMINI_API_KEY
-        } 
+        }
         env {
           name  = "OPENAI_API_KEY"
           value = var.OPENAI_API_KEY
@@ -88,8 +88,8 @@ resource "google_cloud_run_service" "default" {
 
 resource "google_cloud_run_service_iam_member" "member" {
   location = google_cloud_run_service.default.location
-  project = google_cloud_run_service.default.project
-  service = google_cloud_run_service.default.name
-  role = "roles/run.invoker"
-  member = "allUsers"
+  project  = google_cloud_run_service.default.project
+  service  = google_cloud_run_service.default.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
 }

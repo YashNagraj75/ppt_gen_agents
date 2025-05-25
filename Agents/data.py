@@ -263,6 +263,19 @@ def get_presentation(doc_id):
                     serialized_doc[key] = value.strftime("%Y-%m-%d %H:%M:%S")
                 else:
                     serialized_doc[key] = value
+            if (
+                len(serialized_doc.get("validated_layouts"))
+                - len(serialized_doc.get("placeholders"))
+                > 5
+            ):
+                serialized_doc["validated_layouts"] = []
+
+            if (
+                len(serialized_doc.get("validated_layouts"))
+                - len(serialized_doc.get("placeholders"))
+                < 0
+            ):
+                serialized_doc["validated_layouts"] = []
 
             return serialized_doc
         return None
@@ -271,7 +284,7 @@ def get_presentation(doc_id):
         return None
 
 
-def get_presentation_by_uid(user_id: str, limit: int = None):
+def get_presentation_by_uid(user_id: str, limit: int = 10):
     try:
         db = mongo_client["main"]
         collection = db["PPT"]

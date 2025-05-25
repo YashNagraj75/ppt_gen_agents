@@ -84,7 +84,7 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
             mongo_client,
             doc_id,
             layouts_planned,
-            "layouts planned",
+            "layouts_planned",
         )
     except Exception as e:
         print(f"Error in generating layout: {e}")
@@ -119,7 +119,7 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
                 mongo_client,
                 doc_id,
                 layouts_processed,
-                "processing layouts",
+                "processing_layouts",
             )
     except Exception as e:
         print(f"Error in generating content: {e}")
