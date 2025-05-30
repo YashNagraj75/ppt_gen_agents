@@ -2,8 +2,14 @@ import os
 import uuid
 
 from google.cloud import batch_v1
-from google.cloud.batch_v1.types import (AllocationPolicy, ComputeResource,
-                                         Job, Runnable, TaskGroup, TaskSpec)
+from google.cloud.batch_v1.types import (
+    AllocationPolicy,
+    ComputeResource,
+    Job,
+    Runnable,
+    TaskGroup,
+    TaskSpec,
+)
 
 
 async def submit_batch_job(doc_id: str) -> str:
@@ -36,8 +42,8 @@ async def submit_batch_job(doc_id: str) -> str:
     task_spec = TaskSpec(
         runnables=[runnable],
         compute_resource=compute,
-        max_retry_count=1,
-        max_run_duration="1200s",
+        max_retry_count=0,
+        max_run_duration="3600s",
     )
     task_group = TaskGroup(task_spec=task_spec, task_count=1, parallelism=1)
 
