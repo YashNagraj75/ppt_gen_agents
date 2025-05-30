@@ -1,8 +1,12 @@
-import logging
 import os
 
-from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, Runner,
-                    set_default_openai_api)
+from agents import (
+    Agent,
+    ModelSettings,
+    OpenAIChatCompletionsModel,
+    Runner,
+    set_default_openai_api,
+)
 from google.cloud import logging
 from openai import AsyncOpenAI
 from pymongo import MongoClient
@@ -42,7 +46,7 @@ planner = Agent(
     instructions=Planner_Prompt.format(
         templates=Layout_Desc,
     ),
-    model_settings=ModelSettings(temperature=0.9),
+    model_settings=ModelSettings(temperature=0.9, reasoning=True),
     output_type=list[PlannerOutput],
 )
 
@@ -80,6 +84,7 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
         parsed_layouts = parse_planner_output(layouts)
         layouts_planned.append(parsed_layouts)
         logger.log_text(f"Layouts planned: {layouts_planned}")
+        print(f"Layouts planned: {layouts_planned}")
         update_layouts(
             mongo_client,
             doc_id,
@@ -107,14 +112,17 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
             )
             content = await Runner.run(content_generator, "Make the slide layout")
             logger.log_text(f"Content generated: {content}")
+            print(f"Content generated: {content}")
             formatted_content = await Runner.run(
                 content_formatter,
                 f"Format this {content.final_output} to output schema",
             )
             logger.log_text(f"Formatted output: {formatted_content.final_output}")
+            print(f"Formatted output: {formatted_content.final_output}")
             parsed_content = parse_data(formatted_content.final_output)
             layouts_processed.append(parsed_content)
             logger.log_text(f"Layouts processed: {layouts_processed}")
+            print(f"Layouts processed: {layouts_processed}")
             update_placeholders(
                 mongo_client,
                 doc_id,

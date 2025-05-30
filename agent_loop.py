@@ -7,9 +7,14 @@ from google.cloud import logging
 from pymongo import MongoClient
 
 from Agents.agents_new import generate
-from Agents.data import (final_update, get_chunks_for_topic,
-                         get_placeholders_from_mongo, get_topic_ids_for_unit,
-                         get_units_from_mongo, update_validated_layouts)
+from Agents.data import (
+    final_update,
+    get_chunks_for_topic,
+    get_placeholders_from_mongo,
+    get_topic_ids_for_unit,
+    get_units_from_mongo,
+    update_validated_layouts,
+)
 from Agents.utils import parse_data
 from Agents.validation_agents import validator
 
@@ -47,7 +52,9 @@ async def main(doc_id: str):
             print(f"Got content for the topic: {topic[0]}")
             layouts_processed = await generate(content[0][3], doc_id=doc_id)
             logger.log_text(f"Generated layouts: {layouts_processed}")
+            print(f"Generated layouts: {layouts_processed}")
             logger.log_text(f"Planned layouts for the topic: {topic[0]}")
+            print(f"Planned layouts for the topic: {topic[0]}")
             all_layouts_for_unit.append(layouts_processed)
 
         try:
@@ -69,7 +76,13 @@ async def main(doc_id: str):
                     logger.log_text(f"Error parsing validation result: {parse_error}")
                     print(f"Raw validation result: {validated_layout}")
                     logger.log_text(f"Raw validation result: {validated_layout}")
-                    continue
+                    update_validated_layouts(
+                        mongo_client,
+                        doc_id,
+                        [],
+                        "failed during parsing validation result",
+                    )
+                    break
                 layouts_validated.append(layouts_parsed)
                 update_validated_layouts(
                     mongo_client,

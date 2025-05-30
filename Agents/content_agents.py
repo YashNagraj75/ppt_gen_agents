@@ -1,12 +1,25 @@
 import os
 
-from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel, handoff,
-                    model_settings)
+from agents import (
+    Agent,
+    ModelSettings,
+    OpenAIChatCompletionsModel,
+    handoff,
+    model_settings,
+)
 from openai import AsyncOpenAI
 
-from .prompts import (Chart_Prompt, Formatter_Prompt, Image_Prompt,
-                      Input_String, Layout_Desc, Media_Prompt, Output_String,
-                      Table_Prompt, Text_Prompt)
+from .prompts import (
+    Chart_Prompt,
+    Formatter_Prompt,
+    Image_Prompt,
+    Input_String,
+    Layout_Desc,
+    Media_Prompt,
+    Output_String,
+    Table_Prompt,
+    Text_Prompt,
+)
 from .schema import ContentOutput
 from .tools import get_image_description, get_video_and_transcript
 
@@ -52,8 +65,12 @@ media_agent = chart_agent.clone(
 
 content_generator = Agent(
     name="Content Generator",
-    model=OpenAIChatCompletionsModel("gemini-2.0-flash-001", openai_client=client),
-    model_settings=ModelSettings(temperature=0.6, tool_choice="required"),
+    model=OpenAIChatCompletionsModel(
+        "gemini-2.5-flash-preview-05-20", openai_client=client
+    ),
+    model_settings=ModelSettings(
+        temperature=0.6, tool_choice="required", reasoning=True
+    ),
     tools=[
         text_agent.as_tool(
             tool_name="text_placeholder_content_generation",
