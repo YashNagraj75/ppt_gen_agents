@@ -4,7 +4,6 @@ from agents import (
     Agent,
     ModelSettings,
     OpenAIChatCompletionsModel,
-    handoff,
     model_settings,
 )
 from openai import AsyncOpenAI
@@ -68,9 +67,7 @@ content_generator = Agent(
     model=OpenAIChatCompletionsModel(
         "gemini-2.5-flash-preview-05-20", openai_client=client
     ),
-    model_settings=ModelSettings(
-        temperature=0.6, tool_choice="required", reasoning=True
-    ),
+    model_settings=ModelSettings(temperature=0.6, tool_choice="required"),
     tools=[
         text_agent.as_tool(
             tool_name="text_placeholder_content_generation",

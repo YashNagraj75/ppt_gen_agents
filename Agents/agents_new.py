@@ -46,7 +46,7 @@ planner = Agent(
     instructions=Planner_Prompt.format(
         templates=Layout_Desc,
     ),
-    model_settings=ModelSettings(temperature=0.9, reasoning=True),
+    model_settings=ModelSettings(temperature=0.9),
     output_type=list[PlannerOutput],
 )
 
