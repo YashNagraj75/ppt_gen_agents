@@ -32,7 +32,7 @@ Work through your reasoning step-by-step:
         *   Structure for processes or timelines (horizontal, vertical).
     *   Evaluate how each template's structure might support **clarity and visual engagement for students** and **easy navigation/recall for the teacher**.
     *   **(Important: Do NOT use the 'tips' section within the template descriptions for this planning stage; focus on the inherent structure and visual layout).**
-    *  **Prioritize templates that allow for visual engagement** (e.g., `contentWithMediaRight/Left`, `imageWithCaption`, `chartSingle`, `processHorizontal/Vertical`, `timelineHorizontal/Vertical`) when dealing with dense text or complex concepts.
+    *  **Prioritize templates that allow for visual engagement** (e.g., `contentWithMediaRight/Left`, `imageWithCaption`, `chartSingle`, `processHorizontal/Vertical`, `timelineHorizontal/Vertical`) when dealing with dense text or complex concepts and also some charts if possible.
 
 3.  **Layout Proposal & Justification (Prioritizing Visuals):**
     *   Propose a logical **sequence** of slides using the available layout names.
