@@ -277,6 +277,22 @@ def get_presentation(doc_id):
             ):
                 serialized_doc["validated_layouts"] = []
 
+            validated = serialized_doc.get("validated_layouts", [])
+            placeholders = serialized_doc.get("placeholders", [])
+
+            if validated:
+                serialized_doc["slides"] = [
+                    item["data"] for item in validated if "data" in item
+                ]
+            else:
+                serialized_doc["slides"] = [
+                    item["data"] for item in placeholders if "data" in item
+                ]
+
+            serialized_doc.pop("placeholders", None)
+            serialized_doc.pop("validated_layouts", None)
+            serialized_doc.pop("layouts", None)
+
             return serialized_doc
         return None
     except Exception as e:
