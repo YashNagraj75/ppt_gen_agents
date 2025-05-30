@@ -14,9 +14,7 @@ client = AsyncOpenAI(
 validator = Agent(
     name="Validator",
     instructions=Validator_Prompt.format(layouts=Layout_Desc),
-    model=OpenAIChatCompletionsModel(
-        "gemini-2.5-flash-preview-05-20", openai_client=client
-    ),
+    model=OpenAIChatCompletionsModel("gemini-2.0-flash", openai_client=client),
     model_settings=ModelSettings(temperature=0.8),
     output_type=ContentOutput,
 )
