@@ -7,6 +7,8 @@ from agents import (
     model_settings,
 )
 from openai import AsyncOpenAI
+from google.auth import default
+import google.auth.transport.requests
 
 from .prompts import (
     Chart_Prompt,
@@ -23,16 +25,19 @@ from .schema import ContentOutput
 from .tools import get_image_description, get_video_and_transcript
 
 # Create the client here instead of importing from agents_new
+credentials, _ = default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
+credentials.refresh(google.auth.transport.requests.Request())
+
 client = AsyncOpenAI(
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-    api_key=os.environ.get("GEMINI_API_KEY"),
+    base_url="https://us-central1-aiplatform.googleapis.com/v1/projects/edunova-455712/locations/us-central1/endpoints/openapi",
+    api_key=credentials.token,
 )
 
 chart_agent = Agent(
     name="Chart Generator",
     instructions=Chart_Prompt,
-    model=OpenAIChatCompletionsModel("gemini-2.0-flash-001", openai_client=client),
-    model_settings=ModelSettings(temperature=0.6, tool_choice="required"),
+    model=OpenAIChatCompletionsModel("google/gemini-2.0-flash", openai_client=client),
+    model_settings=ModelSettings(temperature=0.6),
 )
 
 text_agent = chart_agent.clone(
@@ -65,9 +70,9 @@ media_agent = chart_agent.clone(
 content_generator = Agent(
     name="Content Generator",
     model=OpenAIChatCompletionsModel(
-        "gemini-2.5-flash-preview-05-20", openai_client=client
+        "google/gemini-2.5-flash-preview-05-20", openai_client=client
     ),
-    model_settings=ModelSettings(temperature=0.4, tool_choice="required"),
+    model_settings=ModelSettings(temperature=0.8, tool_choice="required"),
     tools=[
         text_agent.as_tool(
             tool_name="text_placeholder_content_generation",
@@ -95,7 +100,7 @@ content_generator = Agent(
 content_formatter = Agent(
     name="Content Formatter",  # Changed name from "Chart Generator" to more accurate "Content Formatter"
     instructions=Formatter_Prompt,
-    model=OpenAIChatCompletionsModel("gemini-2.0-flash-001", openai_client=client),
+    model=OpenAIChatCompletionsModel("google/gemini-2.0-flash", openai_client=client),
     model_settings=ModelSettings(temperature=0.6),
     output_type=ContentOutput,
 )

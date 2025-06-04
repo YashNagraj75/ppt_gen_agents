@@ -13,7 +13,9 @@ from pymongo import MongoClient
 
 from .content_agents import content_formatter, content_generator
 from .data import update_layouts, update_placeholders
-from .prompts import Content_Generator, Layout_Desc, Planner_Prompt
+from .prompts import *
+from google.auth import default
+import google.auth.transport.requests
 from .schema import PlannerOutput
 from .tools import encode_images
 from .utils import parse_data, parse_planner_output
@@ -25,23 +27,19 @@ logger = log_client.logger("generator_logs")
 
 mongo_client = MongoClient(os.environ.get("MONGO_URI"))
 
+credentials, _ = default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
+credentials.refresh(google.auth.transport.requests.Request())
+
 client = AsyncOpenAI(
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-    api_key=os.environ.get("GEMINI_API_KEY"),
+    base_url="https://us-central1-aiplatform.googleapis.com/v1/projects/edunova-455712/locations/us-central1/endpoints/openapi",
+    api_key=credentials.token,
 )
 
-
-create_slide = Agent(
-    name="Create Slide",
-    instructions="You are an expert slide designer. Create a slide based on the layout provided.",
-    model=OpenAIChatCompletionsModel("gemini-2.0-flash", openai_client=client),
-    model_settings=ModelSettings(temperature=0.8),
-)
 
 planner = Agent(
     name="Slide Layout Planner",
     model=OpenAIChatCompletionsModel(
-        "gemini-2.5-flash-preview-05-20", openai_client=client
+        "google/gemini-2.5-flash-preview-05-20", openai_client=client
     ),
     instructions=Planner_Prompt.format(
         templates=Layout_Desc,
@@ -103,12 +101,33 @@ async def generate(syllabus_content: str = None, doc_id: str = None):
         return
 
     try:
+        layout_prompts = {
+            "titleSlide": titleSlide,
+            "contentFull": contentFull,
+            "contentTwoCol": contentTwoCol,
+            "contentThreeCol": contentThreeCol,
+            "contentFourCol": contentFourCol,
+            "contentWithMediaRight": contentWithMediaRight,
+            "contentWithMediaLeft": contentWithMediaLeft,
+            "imageWithCaption": imageWithCaption,
+            "videoWithCaption": videoWithCaption,
+            "imageGrid": imageGrid,
+            "table": table,
+            "chartSingle": chartSingle,
+            "chartDual": chartDual,
+            "dashboard": dashboard,
+            "processHorizontal": processHorizontal,
+            "processVertical": processVertical,
+            "timelineHorizontal": timelineHorizontal,
+            "timelineVertical": timelineVertical,
+        }
+
         for layout in layouts:
             content_generator.instructions = Content_Generator.format(
                 layout_name=layout.layout,
                 title=layout.title,
                 content=syllabus_content,
-                layouts=Layout_Desc,
+                layout_schema=layout_prompts.get(layout.layout.value),
             )
             content = await Runner.run(content_generator, "Make the slide layout")
             logger.log_text(f"Content generated: {content}")

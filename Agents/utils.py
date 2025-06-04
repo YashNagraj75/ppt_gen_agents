@@ -52,7 +52,7 @@ def parse_planner_output(generations):
     slides_data = []
     for generation in generations:
         data = {
-            "layout": generation.layout.name,
+            "layout": generation.layout.value,
             "title": generation.title,
         }
         slides_data.append(data)
