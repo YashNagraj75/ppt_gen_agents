@@ -6,4 +6,5 @@ __pycache__/
 terraform.*
 .terraform.*
 plan.out
+.idea/
 

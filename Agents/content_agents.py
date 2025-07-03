@@ -1,26 +1,14 @@
 import os
 
-from agents import (
-    Agent,
-    ModelSettings,
-    OpenAIChatCompletionsModel,
-    model_settings,
-)
-from openai import AsyncOpenAI
-from google.auth import default
 import google.auth.transport.requests
+from agents import (Agent, ModelSettings, OpenAIChatCompletionsModel,
+                    model_settings)
+from google.auth import default
+from openai import AsyncOpenAI
 
-from .prompts import (
-    Chart_Prompt,
-    Formatter_Prompt,
-    Image_Prompt,
-    Input_String,
-    Layout_Desc,
-    Media_Prompt,
-    Output_String,
-    Table_Prompt,
-    Text_Prompt,
-)
+from .prompts import (Chart_Prompt, Formatter_Prompt, Image_Prompt,
+                      Input_String, Layout_Desc, Media_Prompt, Output_String,
+                      Table_Prompt, Text_Prompt)
 from .schema import ContentOutput
 from .tools import get_image_description, get_video_and_transcript
 
@@ -72,7 +60,9 @@ content_generator = Agent(
     model=OpenAIChatCompletionsModel(
         "google/gemini-2.5-flash-preview-05-20", openai_client=client
     ),
-    model_settings=ModelSettings(temperature=0.8, tool_choice="required"),
+    model_settings=ModelSettings(
+        temperature=0.8, tool_choice="required", parallel_tool_calls=True
+    ),
     tools=[
         text_agent.as_tool(
             tool_name="text_placeholder_content_generation",
