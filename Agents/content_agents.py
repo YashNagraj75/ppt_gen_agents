@@ -60,9 +60,7 @@ content_generator = Agent(
     model=OpenAIChatCompletionsModel(
         "google/gemini-2.5-flash-preview-05-20", openai_client=client
     ),
-    model_settings=ModelSettings(
-        temperature=0.8, tool_choice="required", parallel_tool_calls=True
-    ),
+    model_settings=ModelSettings(temperature=0.8, tool_choice="required"),
     tools=[
         text_agent.as_tool(
             tool_name="text_placeholder_content_generation",
